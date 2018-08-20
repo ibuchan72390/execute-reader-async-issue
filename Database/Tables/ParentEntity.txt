@@ -1,0 +1,9 @@
+CREATE TABLE `parententity` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(200) DEFAULT NULL,
+  `Integer` int(11) DEFAULT NULL,
+  `Decimal` decimal(10,2) DEFAULT NULL,
+  `Double` double DEFAULT NULL,
+  `Boolean` bit DEFAULT 0,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
