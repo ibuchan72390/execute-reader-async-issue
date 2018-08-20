@@ -26,18 +26,22 @@ namespace Ivy.Data.MySQL.IntegrationTest
         public async Task this_does_not_seem_to_Work()
         {
             // Setup our connection
-            var conn = new MySqlConnection(ConnectionString);
-
-            await conn.OpenAsync();
-
-            // Insert our record
-            using (var tran = await conn.BeginTransactionAsync())
+            using (var conn = new MySqlConnection(ConnectionString))
             {
-                await conn.ExecuteAsync(InsertSql, new { name = "Name", fName = "FriendlyName", sort = 1 }, tran);
+                await conn.OpenAsync();
 
-                tran.Commit();
+                // Insert our record
+                using (var tran = await conn.BeginTransactionAsync())
+                {
+                    await conn.ExecuteAsync(InsertSql, new { name = "Name", fName = "FriendlyName", sort = 1 }, tran);
+
+                    tran.Commit();
+
+                    tran.Dispose();
+                }
+
+                await conn.CloseAsync();
             }
-
 
             /*
              * At this point, the initial insert execution transaction has been closed.
@@ -47,13 +51,19 @@ namespace Ivy.Data.MySQL.IntegrationTest
              * The above query should properly show that our record has been created
              */
 
+            using (var conn = new MySqlConnection(ConnectionString))
+            { 
+                await conn.OpenAsync();
 
-            // Read our record
-            using (var tran = await conn.BeginTransactionAsync())
-            {
-                var reader = await conn.ExecuteReaderAsync(GetSql, null, tran);
+                // Read our record
+                using (var tran = await conn.BeginTransactionAsync())
+                {
+                    var reader = await conn.ExecuteReaderAsync(GetSql, null, tran);
 
-                Assert.True(reader.FieldCount > 0);
+                    Assert.True(reader.FieldCount > 0);
+                }
+
+                await conn.CloseAsync();
             }
         }
 
@@ -61,18 +71,20 @@ namespace Ivy.Data.MySQL.IntegrationTest
         public void this_does_seem_to_Work()
         {
             // Setup our connection
-            var conn = new MySqlConnection(ConnectionString);
-
-            conn.Open();
-
-            // Insert our record
-            using (var tran = conn.BeginTransaction())
+            using (var conn = new MySqlConnection(ConnectionString))
             {
-                conn.Execute(InsertSql, new { name = "Name", fName = "FriendlyName", sort = 1 }, tran);
+                conn.Open();
 
-                tran.Commit();
+                // Insert our record
+                using (var tran = conn.BeginTransaction())
+                {
+                    conn.Execute(InsertSql, new { name = "Name", fName = "FriendlyName", sort = 1 }, tran);
+
+                    tran.Commit();
+                }
+
+                conn.Close();
             }
-
 
             /*
              * At this point, the initial insert execution transaction has been closed.
@@ -82,13 +94,21 @@ namespace Ivy.Data.MySQL.IntegrationTest
              * The above query should properly show that our record has been created
              */
 
-
-            // Read our record
-            using (var tran = conn.BeginTransaction())
+            using (var conn = new MySqlConnection(ConnectionString))
             {
-                var reader = conn.ExecuteReader(GetSql, null, tran);
+                conn.Open();
 
-                Assert.True(reader.FieldCount > 0);
+                // Read our record
+                using (var tran = conn.BeginTransaction())
+                {
+                    var reader = conn.ExecuteReader(GetSql, null, tran);
+
+                    Assert.True(reader.FieldCount > 0);
+
+                    reader.Close();
+                }
+
+                conn.Close();
             }
         }
 
