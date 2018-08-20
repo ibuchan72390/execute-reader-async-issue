@@ -1,7 +1,5 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
-using System;
-using System.Data;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -109,17 +107,6 @@ namespace Ivy.Data.MySQL.IntegrationTest
                 }
 
                 conn.Close();
-            }
-        }
-
-        private async Task ExecuteFromTransactionAsync(MySqlConnection conn, Func<IDbTransaction, Task> dbTranFn)
-        {
-            using (var tran = await conn.BeginTransactionAsync())
-            {
-                // Insert our record
-                await dbTranFn(tran);
-
-                tran.Commit();
             }
         }
     }
