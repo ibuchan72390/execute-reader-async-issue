@@ -5,6 +5,15 @@ using System.Data;
 using System.Threading.Tasks;
 using Xunit;
 
+/*
+ * In order to setup the database for this test, you'll need MySQL installed
+ * Simply run the script in Database and provide 2 values:
+ * 1) Username for your root user with DB Create capabilities
+ * 2) Password for the above user
+ * 
+ * Execute that script and it will setup the appropriate database for this test demonstration.
+ */
+
 namespace Ivy.Data.MySQL.IntegrationTest
 {
     public class SampleTest
